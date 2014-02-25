@@ -1,0 +1,5 @@
+# Package files #
+node_modules
+
+# Logs #
+*.log
