@@ -3,7 +3,7 @@ var express = require("express")
 , app = express();
 
 app.get('/', function(req, res){
-  crawler.download(function(data) {
+  crawler.getData(function(data) {
     if (data) {
       res.send(data);
     }
