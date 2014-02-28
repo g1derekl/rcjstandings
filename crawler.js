@@ -1,9 +1,9 @@
 var http = require("http")
-, cheerio = require("cheerio")
-, fs = require("fs")
-, DAYS = 122
-, players = {"73516": {"league": 11345, "fgm": 0, "fga": 0}, "73630": {"league": 11345, "fgm": 0, "fga": 0}, "73493": {"league": 11346, "fgm": 0, "fga": 0}, "73618": {"league": 11346, "fgm": 0, "fga": 0}} // For test purposes only; will load from database when ready
-, leagues = [11345, 11346];
+  , cheerio = require("cheerio")
+  , fs = require("fs")
+  , DAYS = 1
+  , players = JSON.parse(fs.readFileSync("teams.json"))
+  , leagues = Object.keys(JSON.parse(fs.readFileSync("leagues.json")));
 
 /* Download HTML from web page at URL */
 var download = function(url, callback) {
@@ -43,18 +43,19 @@ var teamStats = function(data) {
   var $ = cheerio.load(data);
   
   var numTeams = $(".cell-row").length;
-  console.log(numTeams);
   
-  for (var row=0; row < 2; row++) {
+  for (var row=0; row < numTeams; row++) {
     var teamID = $("#row_0_0_" + row + " .league-name a").attr("href").substring(32, 37);
     players[teamID]["ft%"] = $("#row_0_0_" + row + " td").eq(7).text();
-    players[teamID]["3pt"] = $("#row_0_0_" + row + " td").eq(10).text();
-    players[teamID]["reb"] = $("#row_0_0_" + row + " td").eq(13).text();
-    players[teamID]["stl"] = $("#row_0_0_" + row + " td").eq(16).text();
-    players[teamID]["blk"] = $("#row_0_0_" + row + " td").eq(19).text();
-    players[teamID]["ast"] = $("#row_0_0_" + row + " td").eq(22).text();
-    players[teamID]["tov"] = $("#row_0_0_" + row + " td").eq(25).text();
-    players[teamID]["pts"] = $("#row_0_0_" + row + " td").eq(28).text();
+    players[teamID]["3pt"] = $("#row_0_0_" + row + " td").eq(10).text().replace(/\,/g,'');
+    players[teamID]["reb"] = $("#row_0_0_" + row + " td").eq(13).text().replace(/\,/g,'');
+    players[teamID]["stl"] = $("#row_0_0_" + row + " td").eq(16).text().replace(/\,/g,'');
+    players[teamID]["blk"] = $("#row_0_0_" + row + " td").eq(19).text().replace(/\,/g,'');
+    players[teamID]["ast"] = $("#row_0_0_" + row + " td").eq(22).text().replace(/\,/g,'');
+    players[teamID]["tov"] = $("#row_0_0_" + row + " td").eq(25).text().replace(/\,/g,'');
+    players[teamID]["pts"] = $("#row_0_0_" + row + " td").eq(28).text().replace(/\,/g,'');
+    
+    console.log(players[teamID]);
   }
 }
 
@@ -62,10 +63,11 @@ var teamStats = function(data) {
 var getFGData = function(callback) {
   var numRunningQueries = 0;
   
-  Object.keys(players).forEach(function(playerID) {  
+  Object.keys(players).forEach(function(playerID) {
+    console.log(playerID);
     for (var day=1; day <= DAYS; day++) {
       numRunningQueries++;
-      var url = "http://www.fleaflicker.com/nba/team?leagueId=" + players[playerID]["league"] + "&teamId=" + playerID.toString() + "&week=" + day.toString() + "&statType=2";
+      var url = "http://www.fleaflicker.com/nba/team?leagueId=" + players[playerID]["leagueID"] + "&teamId=" + playerID.toString() + "&week=" + day.toString() + "&statType=2";
       
       download(url, function(data) {
         parseShooting(playerID, data);
