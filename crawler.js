@@ -1,11 +1,7 @@
 var http = require("http")
 , cheerio = require("cheerio")
-, src = ["http://www.fleaflicker.com/nba/team?leagueId=11345&teamId=73630"
-       , "http://www.fleaflicker.com/nba/team?leagueId=11345&teamId=73516"
-       , "http://www.fleaflicker.com/nba/team?leagueId=11345&teamId=73667"
-       , "http://www.fleaflicker.com/nba/team?leagueId=11345&teamId=73676"
-       , "http://www.fleaflicker.com/nba/team?leagueId=11345&teamId=73660"
-       , "http://www.fleaflicker.com/nba/team?leagueId=11345&teamId=72898"]; // For test purposes only; will load from database when ready
+, DAYS = 122
+, players = {"73516": {"league": 11345, "fgm": 0, "fga": 0}, "73630": {"league": 11345, "fgm": 0, "fga": 0}, "73493": {"league": 11346, "fgm": 0, "fga": 0}, "73618": {"league": 11346, "fgm": 0, "fga": 0}}; // For test purposes only; will load from database when ready
 
 /* Download HTML from web page at URL */
 var download = function(url, callback) {
@@ -20,39 +16,53 @@ var download = function(url, callback) {
   }).on("error", function() {
     callback(null);
   });
-}
+};
 
 /* Given HTML data of a team, parse field goal percentages */
-var parseShooting = function(data) {
+var parseShooting = function(team, data) {
   var $ = cheerio.load(data);
-  var stats = {};
   
-  stats["team"] = $("#top-bar .breadcrumb .active h1").text();
-  stats["user"] = $(".user-name").text();
-  stats["fgm"] = parseInt($("#row_0_0_10 td").eq(16).text().split("-")[0]);
-  stats["fga"] = parseInt($("#row_0_0_10 td").eq(16).text().split("-")[1]);
-  stats["fg%"] = stats["fgm"] / stats["fga"];
+  players[team]["team"] = $("#top-bar .breadcrumb .active h1").text();
+  players[team]["user"] = $(".user-name").text();
   
-  return stats;
-}
+  var fgmTotal = 0, fgaTotal = 0;
+  for (var row=0; row < 10; row++) {
+    var fg = $("#row_0_0_" + row + " td").eq(16).text().split("-");
+    var fgm = parseInt(fg[0]);
+    var fga = parseInt(fg[1]);
+    if (fgm >= 0) {
+      players[team]["fgm"] += fgm;
+      fgmTotal += fgm;
+      players[team]["fga"] += fga;
+      fgaTotal += fga;
+    }
+  }
+};
 
 /* Get field goal percentages from all teams in league */
-var getData = function(callback) {
+var getFGData = function(callback) {
   var numRunningQueries = 0;
-  var shootingStats = [];
   
-  src.forEach(function(team) {
-    numRunningQueries++;
-    
-    download(team, function(data) {
-      shootingStats.push(parseShooting(data));
-      numRunningQueries--;
+  Object.keys(players).forEach(function(playerID) {  
+    for (var day=1; day <= DAYS; day++) {
+      numRunningQueries++;
+      var url = "http://www.fleaflicker.com/nba/team?leagueId=" + players[playerID]["league"] + "&teamId=" + playerID.toString() + "&week=" + day.toString() + "&statType=2";
       
-      if (numRunningQueries == 0) {
-       callback(shootingStats);
-      }
-    });
+      download(url, function(data) {
+        parseShooting(playerID, data);
+        players[playerID]["fg%"] = players[playerID]["fgm"] / players[playerID]["fga"];
+        
+        numRunningQueries--;
+        if (numRunningQueries == 0) {
+          callback(players);
+        }
+      });
+    }
   });
-}
+};
 
-module.exports.getData = getData;
+var compileStats = function(callback) {
+  
+};
+
+module.exports.getFGData = getFGData;
