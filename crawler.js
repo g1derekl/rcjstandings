@@ -22,11 +22,13 @@ var download = function(url, callback) {
   });
 }
 
-/* Given HTML data of a player, parse field goal percentages */
+/* Given HTML data of a team, parse field goal percentages */
 var parseShooting = function(data) {
   var $ = cheerio.load(data);
   var stats = {};
   
+  stats["team"] = $("#top-bar .breadcrumb .active h1").text();
+  stats["user"] = $(".user-name").text();
   stats["fgm"] = parseInt($("#row_0_0_10 td").eq(16).text().split("-")[0]);
   stats["fga"] = parseInt($("#row_0_0_10 td").eq(16).text().split("-")[1]);
   stats["fg%"] = stats["fgm"] / stats["fga"];
@@ -34,15 +36,15 @@ var parseShooting = function(data) {
   return stats;
 }
 
-/* Get field goal percentages from all players in league */
+/* Get field goal percentages from all teams in league */
 var getData = function(callback) {
   var numRunningQueries = 0;
   var shootingStats = [];
   
-  src.forEach(function(player) {
+  src.forEach(function(team) {
     numRunningQueries++;
     
-    download(player, function(data) {
+    download(team, function(data) {
       shootingStats.push(parseShooting(data));
       numRunningQueries--;
       
