@@ -7,3 +7,6 @@ node_modules
 # Data #
 leagues.json
 teams.json
+
+# Misc #
+TODO.txt
