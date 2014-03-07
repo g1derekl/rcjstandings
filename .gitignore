@@ -1,6 +1,5 @@
 # Package files #
 node_modules
-mysql
 
 # Logs #
 *.log
