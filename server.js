@@ -1,6 +1,6 @@
 var express = require("express")
   , crawler = require("./crawler.js")
-  , data = require("./data.js")
+  , model = require("./model.js")
   , PORT = 3000
   , app = express();
   
@@ -17,7 +17,7 @@ app.get("/", function(request, response){
 });
 
 app.get("/update", function(request, response) {
-  data.buildTeamList(function(message) {
+  model.buildTeamList(function(message) {
     response.send(message);
   });
 });
