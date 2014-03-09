@@ -3,15 +3,9 @@ var http = require("http")
   , fs = require("fs")
   , mysql = require("mysql")
   , model = require("./model.js")
-  , DAYA = 1
-  , DAYB = 1
-  , DAYS = []
+  , DAY = 131
   , leagues = JSON.parse(fs.readFileSync("leagues.json"))
   , leaguesList = Object.keys(leagues[1]);
-  
-for (var d=DAYA; d <= DAYB; d++) {
-  DAYS.push(d);
-}
 
 /* Given HTML data of a team, parse field goal percentages */
 var parseShooting = function(team, data) {
@@ -32,29 +26,27 @@ var parseShooting = function(team, data) {
 };
 
 /* Get field goal percentages from all teams in league */
-var getFGData = function(teams, callback) {
+var getFGData = function(teams, day, callback) {
   var numRunningQueries = 0;
   var preparePercentage = "INSERT INTO fg_percentage (fg_made, fg_attempted, num_day, team_id) VALUES (?, ?, ?, ?)"
     + " ON DUPLICATE KEY UPDATE fg_made = ?, fg_attempted = ?";
   
   Object.keys(teams).forEach(function(teamID) {
-    DAYS.forEach(function(day) {
-      var url = "http://www.fleaflicker.com/nba/team?leagueId=" + teams[teamID] + "&teamId=" + teamID.toString() + "&week=" + day.toString() + "&statType=2";
-      numRunningQueries++;
-      
-      model.download(url, function(data) {
-        var percentage = parseShooting(teamID, data);
-        var insertPercentage = [percentage[0], percentage[1], day, teamID, percentage[0], percentage[1]];
-        model.preparedStatement(preparePercentage, insertPercentage, function(error) {
-          if (error) {
-            console.log(error);
-          }
-        });        
-        numRunningQueries--;
-        if (numRunningQueries == 0) {
-          callback();
+    var url = "http://www.fleaflicker.com/nba/team?leagueId=" + teams[teamID] + "&teamId=" + teamID.toString() + "&week=" + day.toString() + "&statType=2";
+    numRunningQueries++;
+    
+    model.download(url, function(data) {
+      var percentage = parseShooting(teamID, data);
+      var insertPercentage = [percentage[0], percentage[1], day, teamID, percentage[0], percentage[1]];
+      model.preparedStatement(preparePercentage, insertPercentage, function(error) {
+        if (error) {
+          console.log(error);
         }
-      });
+      });        
+      numRunningQueries--;
+      if (numRunningQueries == 0) {
+        callback();
+      }
     });
   });
 };
@@ -89,6 +81,40 @@ var teamStats = function(data) {
   }
 }
 
+/* Populate DB with FG% data */
+var populateFG = function(callback) {
+  var teams = {};
+  
+  var d = DAY;
+
+  model.query("SELECT team_id, league_id FROM teams", function(error, results) {
+    if (error) {
+      callback(error, null);
+    }
+    for (var r=0; r < results.length; r++) {
+      teams[results[r]["team_id"].toString()] = results[r]["league_id"].toString();
+    }
+    
+    var i = 2;
+    function days() {
+      setTimeout(function () {
+        DAY = i;
+        getFGData(teams, DAY, function() {});
+        i++;
+        if (i < 10) {
+          days();
+        }
+        else {
+          DAY = d;
+          callback("success");
+        }
+      }, 30000)
+    }
+    
+    days();
+  });
+}
+
 var compileStats = function(callback) {
   var numRunningQueries = 0;
   var teams = {};
@@ -101,7 +127,7 @@ var compileStats = function(callback) {
       teams[results[r]["team_id"].toString()] = results[r]["league_id"].toString();
     }
 
-    getFGData(teams, function() {
+    getFGData(teams, DAY, function() {
       for (var leagueID=0; leagueID < leaguesList.length; leagueID++) {
         numRunningQueries++;
         var url = "http://www.fleaflicker.com/nba/league?leagueId=" + leaguesList[leagueID];
@@ -176,3 +202,5 @@ var buildTeamList = function(callback) {
 
 module.exports.compileStats = compileStats;
 module.exports.buildTeamList = buildTeamList;
+module.exports.populateFG = populateFG;
+module.exports.getFGData = getFGData;
