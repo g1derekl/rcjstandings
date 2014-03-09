@@ -5,9 +5,11 @@ var express = require("express")
   , app = express();
   
 app.get("/", function(request, response){
-  crawler.compileStats(function(data) {
-    if (data) {
-      response.connection.setTimeout(0);
+  crawler.compileStats(function(error, data) {
+    if (error) {
+      response.send(error);
+    }
+    else if (data) {
       response.send(data);
     }
     else {
@@ -17,7 +19,7 @@ app.get("/", function(request, response){
 });
 
 app.get("/update", function(request, response) {
-  model.buildTeamList(function(message) {
+  crawler.buildTeamList(function(message) {
     response.send(message);
   });
 });
