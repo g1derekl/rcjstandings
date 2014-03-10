@@ -1,26 +1,51 @@
 var express = require("express")
+  , schedule = require("node-schedule")
   , crawler = require("./crawler.js")
   , model = require("./model.js")
   , PORT = 3000
   , app = express();
+
+var rule = new schedule.RecurrenceRule();
+rule.hour = 10;
+rule.minute = 0;
+
+/* Set crawler to run every day at 10 AM ET */
+var j = schedule.scheduleJob(rule, function(){
+  crawler.buildTeamList(function(message) {
+    console.log("Updated team list");
+    
+    crawler.advanceDay();
+    
+    crawler.compileStats(function(error, data) {
+      if (error) {
+        console.log("Stats update error");
+      }
+      else if (data) {
+        console.log(data);
+      }
+      else {
+        console.log("Couldn't update stats");
+      }
+    });
+  });
+});
   
 app.get("/", function(request, response){
+  response.send("Under construction");
+});
+
+/* For development only; remove on deployment */
+app.get("/update", function(request, response) {
   crawler.compileStats(function(error, data) {
     if (error) {
-      response.send(error);
+      response.send("Stats update error");
     }
     else if (data) {
       response.send(data);
     }
     else {
-      console.log("Failed to download data");
+      response.send("Couldn't update stats");
     }
-  });
-});
-
-app.get("/update", function(request, response) {
-  crawler.buildTeamList(function(message) {
-    response.send(message);
   });
 });
 
@@ -28,7 +53,7 @@ app.listen(PORT);
 
 console.log("Listening on port 3000");
 
-/*
+/* Populate DB for multiple days at once, mostly for development */
 var populateFG = function() {
   var numRunningQueries = 0;
   var days = [];
@@ -58,5 +83,3 @@ var populateFG = function() {
     });
   });
 };
-
-populateFG();*/

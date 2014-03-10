@@ -7,6 +7,11 @@ var http = require("http")
   , leagues = JSON.parse(fs.readFileSync("leagues.json"))
   , leaguesList = Object.keys(leagues[1]);
 
+/* Advance day by 1 (used for auto update DB) */  
+var advanceDay = function() {
+  DAY++;
+};
+
 /* Given HTML data of a team, parse field goal percentages */
 var parseShooting = function(team, data) {
   var made = 0;
@@ -137,7 +142,7 @@ var compileStats = function(callback) {
           
           numRunningQueries--;
           if (numRunningQueries == 0) {
-            callback(null, "Success");
+            callback(null, "Stats update success");
           }
         });
       }
@@ -204,3 +209,4 @@ module.exports.compileStats = compileStats;
 module.exports.buildTeamList = buildTeamList;
 module.exports.populateFG = populateFG;
 module.exports.getFGData = getFGData;
+module.exports.advanceDay = advanceDay;
