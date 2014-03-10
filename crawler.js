@@ -3,7 +3,7 @@ var http = require("http")
   , fs = require("fs")
   , mysql = require("mysql")
   , model = require("./model.js")
-  , DAY = 131
+  , DAY = 132
   , leagues = JSON.parse(fs.readFileSync("leagues.json"))
   , leaguesList = Object.keys(leagues[1]);
 

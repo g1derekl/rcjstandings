@@ -28,10 +28,11 @@ app.listen(PORT);
 
 console.log("Listening on port 3000");
 
+/*
 var populateFG = function() {
   var numRunningQueries = 0;
   var days = [];
-  for (var d=1; d <= 131; d++) {
+  for (var d=1; d <= 1; d++) {
     days.push(d);
   }
   var teams = {};
@@ -56,6 +57,6 @@ var populateFG = function() {
       });
     });
   });
-}
+};
 
-populateFG();
+populateFG();*/
