@@ -8,5 +8,6 @@
 	, "cheerio": "0.13.x"
     , "node-schedule": "0.1.x"
     , "mysql": "2.1.x"
+    , "handlebars": "2.0.x"
   }
 }
