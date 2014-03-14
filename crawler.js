@@ -1,5 +1,4 @@
-var http = require("http")
-  , cheerio = require("cheerio")
+var cheerio = require("cheerio")
   , fs = require("fs")
   , mysql = require("mysql")
   , model = require("./model.js")
