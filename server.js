@@ -49,6 +49,12 @@ app.get("/update", function(request, response) {
   });
 });
 
+app.get("/build", function(request, response) {
+  crawler.buildTeamList(function(message) {
+    response.send(message);
+  });
+});
+
 app.listen(PORT);
 
 console.log("Listening on port 3000");
@@ -57,7 +63,7 @@ console.log("Listening on port 3000");
 var populateFG = function() {
   var numRunningQueries = 0;
   var days = [];
-  for (var d=1; d <= 1; d++) {
+  for (var d=131; d <= 135; d++) {
     days.push(d);
   }
   var teams = {};
@@ -83,3 +89,5 @@ var populateFG = function() {
     });
   });
 };
+
+//populateFG();
