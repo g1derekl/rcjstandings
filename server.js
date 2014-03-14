@@ -2,6 +2,7 @@ var express = require("express")
   , schedule = require("node-schedule")
   , crawler = require("./crawler.js")
   , model = require("./model.js")
+  , leaderboard = require("./leaderboard.js")
   , PORT = 3000
   , app = express();
 
@@ -45,6 +46,17 @@ app.get("/update", function(request, response) {
     }
     else {
       response.send("Couldn't update stats");
+    }
+  });
+});
+
+app.get("/leaderboard", function(request, response) {
+  leaderboard.buildLeaderboard(function(error, result) {
+    if (error) {
+      response.send(error);
+    }
+    else {
+      response.send(result);
     }
   });
 });

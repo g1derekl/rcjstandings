@@ -1,4 +1,5 @@
-var model = require("./model.js")
+var handlebars = require("handlebars")
+  , model = require("./model.js")
   , QUERY = "SELECT *, fg_score + ft_score + threes_score + reb_score + stl_score + blk_score + ast_score + tov_score + pts_score AS total_score FROM"
   + " (SELECT a.team_id, a.fg_percent, (SUM(a.fg_percent > b.fg_percent) + 1 + SUM(a.fg_percent >= b.fg_percent))/2 AS fg_score"
   + " FROM (SELECT team_id, SUM(fg_made) / SUM(fg_attempted) AS fg_percent"
@@ -50,3 +51,11 @@ var model = require("./model.js")
   + " GROUP BY team_id) AS pts"
   + " NATURAL JOIN teams"
   + " ORDER BY total_score DESC;";
+  
+var buildLeaderboard = function(callback) {
+  model.query(QUERY, function(error, result) {
+    callback(error, result);
+  });
+};
+
+module.exports.buildLeaderboard = buildLeaderboard;

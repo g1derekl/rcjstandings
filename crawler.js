@@ -2,7 +2,7 @@ var cheerio = require("cheerio")
   , fs = require("fs")
   , mysql = require("mysql")
   , model = require("./model.js")
-  , DAY = 135
+  , DAY = 136
   , leagues = JSON.parse(fs.readFileSync("leagues.json"))
   , leaguesList = Object.keys(leagues[1]);
 

@@ -14,37 +14,57 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          <th>Rank</th>
           <th>Team</th>
           <th>Owner</th>
           <th>League</th>
           <th>FG%</th>
+          <th>Rank</th>
           <th>FT%</th>
+          <th>Rank</th>
           <th>3PTM</th>
+          <th>Rank</th>
           <th>REB</th>
+          <th>Rank</th>
           <th>STL</th>
+          <th>Rank</th>
           <th>BLK</th>
+          <th>Rank</th>
           <th>AST</th>
+          <th>Rank</th>
           <th>TOV</th>
+          <th>Rank</th>
           <th>PTS</th>
+          <th>Rank</th>
+          <th>Total</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>This is the best team in the world</td>
-          <td>User 1</td>
-          <td>League 1</td>
-          <td>50.0</td>
-          <td>80.0</td>
-          <td>100</td>
-          <td>1000</td>
-          <td>500</td>
-          <td>500</td>
-          <td>750</td>
-          <td>300</td>
-          <td>1500</td>
-        </tr>
+        {{#teams}}
+          <tr>
+            <td>{{team_name}}</td>
+            <td>{{player_name}}</td>
+            <td>{{league_name}}</td>
+            <td>{{fg_percent}}</td>
+            <td>{{fg_score}}</td>
+            <td>{{ft_percent}}</td>
+            <td>{{ft_score}}</td>
+            <td>{{three_pointers}}</td>
+            <td>{{threes_score}}</td>
+            <td>{{rebounds}}</td>
+            <td>{{reb_score}}</td>
+            <td>{{steals}}</td>
+            <td>{{stl_score}}</td>
+            <td>{{blocks}}</td>
+            <td>{{blk_score}}</td>
+            <td>{{assists}}</td>
+            <td>{{ast_score}}</td>
+            <td>{{turnovers}}</td>
+            <td>{{tov_score}}</td>
+            <td>{{points}}</td>
+            <td>{{pts_score}}</td>
+            <td>{{total_score}}</td>
+          </tr>
+        {{/teams}}
       </tbody>
     </table>
   </div>
