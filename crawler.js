@@ -2,7 +2,7 @@ var cheerio = require("cheerio")
   , fs = require("fs")
   , mysql = require("mysql")
   , model = require("./model.js")
-  , DAY = 137
+  , DAY = 138
   , leagues = JSON.parse(fs.readFileSync("leagues.json"))
   , leaguesList = Object.keys(leagues[1]);
 
@@ -37,6 +37,7 @@ var getFGData = function(teams, day, callback) {
   
   Object.keys(teams).forEach(function(teamID) {
     var url = "http://www.fleaflicker.com/nba/team?leagueId=" + teams[teamID] + "&teamId=" + teamID.toString() + "&week=" + day.toString() + "&statType=2";
+    
     numRunningQueries++;
     
     model.download(url, function(data) {
@@ -46,11 +47,12 @@ var getFGData = function(teams, day, callback) {
         if (error) {
           console.log(error);
         }
-      });        
-      numRunningQueries--;
-      if (numRunningQueries == 0) {
-        callback();
-      }
+        numRunningQueries--;
+        if (numRunningQueries == 0) {
+          console.log("Success");
+          callback();
+        }
+      });
     });
   });
 };
@@ -130,8 +132,8 @@ var compileStats = function(callback) {
     for (var r=0; r < results.length; r++) {
       teams[results[r]["team_id"].toString()] = results[r]["league_id"].toString();
     }
-
     getFGData(teams, DAY, function() {
+      console.log("FG Data updated");
       for (var leagueID=0; leagueID < leaguesList.length; leagueID++) {
         numRunningQueries++;
         var url = "http://www.fleaflicker.com/nba/league?leagueId=" + leaguesList[leagueID];

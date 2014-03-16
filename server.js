@@ -8,8 +8,7 @@ var express = require("express")
   , app = express();
 
 var rule = new schedule.RecurrenceRule();
-rule.hour = 10;
-rule.minute = 0;
+rule.minute = 19;
 
 /* Set crawler to run every day at 10 AM ET */
 var j = schedule.scheduleJob(rule, function(){
@@ -52,7 +51,7 @@ app.get("/", function(request, response){
 
 /* For development only; remove on deployment */
 
-/*
+
 app.get("/update", function(request, response) {
   crawler.compileStats(function(error, data) {
     if (error) {
@@ -66,7 +65,7 @@ app.get("/update", function(request, response) {
     }
   });
 });
-*/
+
 
 app.get("/leaderboard", function(request, response) {
   leaderboard.buildLeaderboard(function(error, html) {
