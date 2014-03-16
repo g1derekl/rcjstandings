@@ -1,0 +1,13 @@
+{
+  "name": "rcjstandings",
+  "description": "Crawler for Fleaflicker's Reddit Can't Jump fantasy basketball league",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x"
+	, "cheerio": "0.13.x"
+    , "node-schedule": "0.1.x"
+    , "mysql": "2.1.x"
+    , "handlebars": "2.0.x"
+  }
+}
