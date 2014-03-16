@@ -74,7 +74,7 @@ app.get("/leaderboard", function(request, response) {
       console.log(error);
     }
     else {
-      fs.writeFile("index.html", html, function(error, data) {
+      fs.writeFile("index.html", html, "utf-8", function(error, data) {
         if (error) {
           console.log(error);
         }
