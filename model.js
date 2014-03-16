@@ -4,9 +4,9 @@ var http = require("http")
   , mysql = require("mysql")
   , connection = mysql.createConnection({
       host     : "mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/"
-    , user     : "adminJbRPBbW"
-    , password : "C-ppKyw1_N_p"
-    , database : "rcjstandings"
+    , user     : "adminEfkcgBY"
+    , password : "YzRWju7HN7YG"
+    , database : "rcjstandings_fg"
     });
 
 connection.connect();
