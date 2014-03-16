@@ -1,0 +1,12 @@
+TODO
+
+- Built front-end interface
+
+COMPLETE
+
+- Implement FG% crawler
+- Implement league stats crawler
+- Setup mySQL schema
+- Implement crawler to populate data
+- Implement refresh crawling timer
+- Update DB with FG% stats
