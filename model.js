@@ -3,9 +3,15 @@ var http = require("http")
   , fs = require("fs")
   , mysql = require("mysql")
   , connection = mysql.createConnection({
+<<<<<<< HEAD
       host     : "mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/"
     , user     : "adminEfkcgBY"
     , password : "YzRWju7HN7YG"
+=======
+      host     : "localhost"
+    , user     : "user"
+    , password : "998544151"
+>>>>>>> Added table sorting plugin
     , database : "rcjstandings_fg"
     });
 

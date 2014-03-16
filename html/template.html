@@ -5,9 +5,9 @@
 
 <body>
   <div class="container">
-    <h3>Division 2 Leaderboard</h3>
+    <h4>Division 2 Leaderboard</h4>
   </div>
-  <table id="standings" class="table table-responsive table-hover" style="width:100%">
+  <table id="standings" class="table table-responsive table-hover tablesorter" style="width:100%">
     <thead>
       <tr>
         <th>Rank</th>
@@ -70,22 +70,56 @@
   <link rel="stylesheet" type="text/css" href="/css/index.css" />
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/plugins/tablesorter/jquery-latest.js"></script> 
+  <script type="text/javascript" src="/plugins/tablesorter/jquery.tablesorter.js"></script>
+  <link rel="stylesheet" type="text/css" href="/plugins/tablesorter/themes/blue/style.css" />
   <script src="/plugins/floatThead.min.js"></script>
   
   <script type="text/javascript">
   
-  var table = $('#standings');
-  table.floatThead({
-    scrollContainer: function(table){
-      return table.closest('.wrapper');
-    }
-  });
-
-  var teams = $(".rank");
-  
-  for (var row=0; row < teams.length; row++) {
-    var rank = row + 1;
-    teams.eq(row).text(rank.toString());
+  function floatHeader() {
+    var table = $('#standings');
+    table.floatThead({
+      scrollContainer: function(table){
+        return table.closest('.wrapper');
+      }
+    });
   }
+  
+  function addRankings() {
+    var teams = $(".rank");
+      
+    for (var row=0; row < teams.length; row++) {
+      var rank = row + 1;
+      teams.eq(row).text(rank.toString());
+    }
+  }
+  
+  function columnSorting() {
+    $("#standings").tablesorter({
+      cancelSelection: false
+    , headers: {
+        0: {sorter: false}
+      , 1: {sorter: false}
+      , 2: {sorter: false}
+      , 3: {sorter: false}
+      , 5: {sorter: false}
+      , 7: {sorter: false}
+      , 9: {sorter: false}
+      , 11: {sorter: false}
+      , 13: {sorter: false}
+      , 15: {sorter: false}
+      , 17: {sorter: false}
+      , 19: {sorter: false}
+      , 21: {sorter: false}
+      }
+    }); 
+  }
+  
+  $(document).ready(function() {
+    floatHeader();
+    addRankings();
+    columnSorting();
+  });
   </script>
 </body>

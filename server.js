@@ -66,7 +66,7 @@ app.get("/update", function(request, response) {
     }
   });
 });
-
+*/
 
 app.get("/leaderboard", function(request, response) {
   leaderboard.buildLeaderboard(function(error, html) {
@@ -79,13 +79,14 @@ app.get("/leaderboard", function(request, response) {
           console.log(error);
         }
         else {
-          response.send("Created standings page");
+          response.send(html);
         }
       });
     }
   });
 });
 
+/*
 app.get("/build", function(request, response) {
   crawler.buildTeamList(function(message) {
     response.send(message);
