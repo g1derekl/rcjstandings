@@ -1,5 +1,6 @@
 var express = require("express")
   , schedule = require("node-schedule")
+  , fs = require("fs")
   , crawler = require("./crawler.js")
   , model = require("./model.js")
   , leaderboard = require("./leaderboard.js")
@@ -23,6 +24,18 @@ var j = schedule.scheduleJob(rule, function(){
       }
       else if (data) {
         console.log(data);
+        leaderboard.buildLeaderboard(function(error, html) {
+          if (error) {
+            console.log(error);
+          }
+          else {
+            fs.writeFile("index.html", html, function(error, data) {
+              if (error) {
+                console.log(error);
+              }
+            });
+          }
+        });
       }
       else {
         console.log("Couldn't update stats");
@@ -30,12 +43,16 @@ var j = schedule.scheduleJob(rule, function(){
     });
   });
 });
+
+app.use(express.static(__dirname));
   
 app.get("/", function(request, response){
-  response.send("Under construction");
+  response.redirect("/index.html");
 });
 
 /* For development only; remove on deployment */
+
+/*
 app.get("/update", function(request, response) {
   crawler.compileStats(function(error, data) {
     if (error) {
@@ -50,13 +67,21 @@ app.get("/update", function(request, response) {
   });
 });
 
+
 app.get("/leaderboard", function(request, response) {
-  leaderboard.buildLeaderboard(function(error, result) {
+  leaderboard.buildLeaderboard(function(error, html) {
     if (error) {
-      response.send(error);
+      console.log(error);
     }
     else {
-      response.send(result);
+      fs.writeFile("index.html", html, function(error, data) {
+        if (error) {
+          console.log(error);
+        }
+        else {
+          response.send("Created standings page");
+        }
+      });
     }
   });
 });
@@ -65,7 +90,7 @@ app.get("/build", function(request, response) {
   crawler.buildTeamList(function(message) {
     response.send(message);
   });
-});
+}); */
 
 app.listen(PORT);
 

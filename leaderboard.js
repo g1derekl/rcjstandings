@@ -1,11 +1,12 @@
 var handlebars = require("handlebars")
+  , fs = require("fs")
   , model = require("./model.js")
   , QUERY = "SELECT *, fg_score + ft_score + threes_score + reb_score + stl_score + blk_score + ast_score + tov_score + pts_score AS total_score FROM"
   + " (SELECT a.team_id, a.fg_percent, (SUM(a.fg_percent > b.fg_percent) + 1 + SUM(a.fg_percent >= b.fg_percent))/2 AS fg_score"
-  + " FROM (SELECT team_id, SUM(fg_made) / SUM(fg_attempted) AS fg_percent"
+  + " FROM (SELECT team_id, SUM(fg_made) / SUM(fg_attempted) * 100 AS fg_percent"
   + " FROM fg_percentage"
   + " GROUP BY team_id) AS a"
-  + " CROSS JOIN (SELECT team_id, SUM(fg_made) / SUM(fg_attempted) AS fg_percent"
+  + " CROSS JOIN (SELECT team_id, SUM(fg_made) / SUM(fg_attempted) * 100 AS fg_percent"
 	+ " FROM fg_percentage"
 	+ " GROUP BY team_id) AS b"
   + " GROUP BY team_id) AS fg"
@@ -49,12 +50,26 @@ var handlebars = require("handlebars")
   + " FROM stats a"
   + " CROSS JOIN stats b"
   + " GROUP BY team_id) AS pts"
-  + " NATURAL JOIN teams"
+  + " NATURAL JOIN teams NATURAL JOIN leagues"
   + " ORDER BY total_score DESC;";
   
 var buildLeaderboard = function(callback) {
-  model.query(QUERY, function(error, result) {
-    callback(error, result);
+  fs.readFile("./html/template.html", "utf-8", function(error, source) {
+    if (error) {
+      callback(error, null);
+    }
+    else {
+      model.query(QUERY, function(error, result) {
+        if (error) {
+          callback(error, null);
+        }
+        else {
+          var template = handlebars.compile(source);
+          var data = {"teams": result};
+          callback(null, template(data));;
+        }
+      });
+    }
   });
 };
 
