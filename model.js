@@ -3,10 +3,10 @@ var http = require("http")
   , fs = require("fs")
   , mysql = require("mysql")
   , connection = mysql.createConnection({
-      host     : "localhost"
-    , user     : "user"
-    , password : "998544151"
-    , database : "rcjstandings_fg"
+      host     : "mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/"
+    , user     : "adminJbRPBbW"
+    , password : "C-ppKyw1_N_p"
+    , database : "rcjstandings"
     });
 
 connection.connect();
